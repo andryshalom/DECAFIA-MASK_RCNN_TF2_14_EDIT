@@ -1,3 +1,16 @@
+This dataset is a combination of various sources, including:
+
+- "RoCoLe" by Parraga-Alava, Jorge, et al., under the CC BY 4.0 license. Details and original data available at: https://doi.org/10.17632/c5yvn32dzg.2
+
+- "rust and leaf miner" by Brito Silva, Lucas, et al., under the CC BY 4.0 license. Details and original data available at: https://doi.org/10.17632/vfxf4trtcg.5
+
+Additionally, images in this dataset have been edited by [andrey salom & esteban rosas] for [specific purposes, e.g., enhancing quality or clarity].
+
+Furthermore, [Your Name] has incorporated images from their own dataset, which is not publicly available, into this combined dataset.
+
+All images combined in this dataset are available under the Creative Commons Attribution 4.0 International (CC BY 4.0) license.
+ombined in this dataset are available under the Creative Commons Attribution 4.0 International (CC BY 4.0) license.
+
 Mask R-CNN
 
 The MIT License (MIT)
@@ -21,3 +34,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
