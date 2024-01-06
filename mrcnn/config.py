@@ -31,6 +31,8 @@ class Config(object):
     # handle 2 images of 1024x1024px.
     # Adjust based on your GPU memory and image sizes. Use the highest
     # number that your GPU can handle for best performance.
+    # Ajusta según la memoria de tu GPU y el tamaño de las imágenes. Utiliza el número más alto
+    # que tu GPU pueda manejar para un mejor rendimiento.
     IMAGES_PER_GPU = 2
 
     # Number of training steps per epoch
@@ -42,16 +44,15 @@ class Config(object):
     # a lot of time on validation stats.
     STEPS_PER_EPOCH = 1000
 
-    # Number of validation steps to run at the end of every training epoch.
-    # A bigger number improves accuracy of validation stats, but slows
-    # down the training.
+    # Número de pasos de validación que se ejecutarán al final de cada época de entrenamiento.
+    # Un número mayor mejora la precisión de las estadísticas de validación, pero ralentiza el entrenamiento.
     VALIDATION_STEPS = 10
 
-    # Backbone network architecture
-    # Supported values are: resnet50, resnet101.
-    # You can also provide a callable that should have the signature
-    # of model.resnet_graph. If you do so, you need to supply a callable
-    # to COMPUTE_BACKBONE_SHAPE as well
+    # Arquitectura de la red "backbone".
+    # Los valores soportados son: resnet50, resnet101.
+    # También puedes proporcionar una función que debe tener la firma
+    # de model.resnet_graph. Si lo haces, también necesitas proporcionar una función
+    # a COMPUTE_BACKBONE_SHAPE.
     BACKBONE = "resnet101"
 
     # Only useful if you supply a callable to BACKBONE. Should compute
@@ -61,6 +62,8 @@ class Config(object):
 
     # The strides of each layer of the FPN Pyramid. These values
     # are based on a Resnet101 backbone.
+    # Las zancadas de cada capa de la Pirámide FPN. Estos valores
+    # se basan en una red "backbone" Resnet101
     BACKBONE_STRIDES = [4, 8, 16, 32, 64]
 
     # Size of the fully-connected layers in the classification graph
@@ -73,6 +76,7 @@ class Config(object):
     NUM_CLASSES = 1  # Override in sub-classes
 
     # Length of square anchor side in pixels
+    # Longitud del lado de la ancla cuadrada en píxeles
     RPN_ANCHOR_SCALES = (32, 64, 128, 256, 512)
 
     # Ratios of anchors at each cell (width/height)
@@ -86,9 +90,12 @@ class Config(object):
 
     # Non-max suppression threshold to filter RPN proposals.
     # You can increase this during training to generate more propsals.
+    # Umbral de supresión no máxima para filtrar propuestas RPN.
+    # Puedes aumentar esto durante el entrenamiento para generar más propuestas.
     RPN_NMS_THRESHOLD = 0.7
 
     # How many anchors per image to use for RPN training
+    # Cuántas anclas por imagen usar para el entrenamiento de RPN
     RPN_TRAIN_ANCHORS_PER_IMAGE = 256
     
     # ROIs kept after tf.nn.top_k and before non-maximum suppression
@@ -137,6 +144,7 @@ class Config(object):
     IMAGE_CHANNEL_COUNT = 3
 
     # Image mean (RGB)
+    # Media RGB para nuestra base de datos: [ 91.78358868 129.7007309  112.42858215]
     MEAN_PIXEL = np.array([123.7, 116.8, 103.9])
 
     # Number of ROIs per image to feed to classifier/mask heads
