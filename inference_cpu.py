@@ -5,7 +5,14 @@ import mrcnn.visualize
 import cv2
 import os
 import tensorflow as tf  # Importar TensorFlow
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Configurar para usar solo CPU
+from google.colab import drive
+
+
+# Definir la ruta de destino en Google Drive donde se guardará la imagen resultante
+output_dir = "/content/maskrcnn/images"
+
+# Crear el directorio de salida si no existe
+#os.makedirs(output_dir, exist_ok=True)
 
 # load the class label names from disk, one label per line
 # CLASS_NAMES = open("coco_labels.txt").read().strip().split("\n")
@@ -45,10 +52,13 @@ with tf.device('/CPU:0'):  # Force Tensorflow to use CPU
     # Get the results for the first image.
     r = r[0]
 
-    # Visualize the detected objects.
-    mrcnn.visualize.display_instances(image=image,
-                                      boxes=r['rois'],
-                                      masks=r['masks'],
-                                      class_ids=r['class_ids'],
-                                      class_names=CLASS_NAMES,
-                                      scores=r['scores'])
+    # Visualize the detected objects and save the image to Google Drive
+    result_image = mrcnn.visualize.display_instances(image=image,
+                                                      boxes=r['rois'],
+                                                      masks=r['masks'],
+                                                      class_ids=r['class_ids'],
+                                                      class_names=CLASS_NAMES,
+                                                      scores=r['scores'])
+
+    # Guardar la imagen resultante en Google Drive
+    cv2.imwrite(os.path.join(output_dir, "result_image.jpg"), cv2.cvtColor(result_image, cv2.COLOR_RGB2BGR))
