@@ -21,6 +21,7 @@ from matplotlib import patches,  lines
 from matplotlib.patches import Polygon
 import IPython.display
 
+
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../")
 
@@ -504,3 +505,85 @@ def display_weight_stats(model):
                 "{:+9.4f}".format(w.std()),
             ])
     display_table(table)
+
+
+def display_instances(image, boxes, masks, class_ids, class_names,
+                      scores=None, title="",
+                      show_mask=True, show_bbox=True,
+                      show_caption=True,
+                      colors=None, captions=None):
+    """
+    boxes: [num_instance, (y1, x1, y2, x2, class_id)] in image coordinates.
+    masks: [height, width, num_instances]
+    class_ids: [num_instances]
+    class_names: list of class names of the dataset
+    scores: (optional) confidence scores for each box
+    title: (optional) Figure title
+    show_mask, show_bbox: To show masks and bounding boxes or not
+    show_caption: To show captions or not
+    colors: (optional) An array or colors to use with each object
+    captions: (optional) A list of strings to use as captions for each object
+    """
+    # Number of instances
+    N = boxes.shape[0]
+
+    # Generate random colors if colors are not provided
+    if colors is None:
+        colors = random_colors(N)
+
+    # Show area outside image boundaries.
+    height, width = image.shape[:2]
+    plt.ylim(height + 10, -10)
+    plt.xlim(-10, width + 10)
+    plt.axis('off')
+    plt.title(title)
+
+    masked_image = image.astype(np.uint32).copy()
+    for i in range(N):
+        color = colors[i]
+
+        # Bounding box
+        if show_bbox:
+            y1, x1, y2, x2 = boxes[i][:4]
+            p = Polygon([(x1, y1), (x2, y1), (x2, y2), (x1, y2)],
+                        edgecolor=color, linewidth=2, facecolor='none')
+            plt.gca().add_patch(p)
+
+        # Label
+        if show_caption:
+            if not captions:
+                class_id = class_ids[i]
+                score = scores[i] if scores is not None else None
+                label = class_names[class_id]
+                caption = "{} {:.3f}".format(label, score) if score else label
+            else:
+                caption = captions[i]
+            plt.text(x1, y1 + 8, caption, color='w', size=11, backgroundcolor="none")
+
+        # Mask
+        if show_mask:
+            mask = masks[:, :, i]
+            masked_image = apply_mask(masked_image, mask, color)
+
+            # Mask Polygon
+            padded_mask = np.zeros(
+                (mask.shape[0] + 2, mask.shape[1] + 2), dtype=np.uint8)
+            padded_mask[1:-1, 1:-1] = mask
+            contours = find_contours(padded_mask, 0.5)
+            for verts in contours:
+                # Subtract the padding and flip (y, x) to (x, y)
+                verts = np.fliplr(verts) - 1
+                p = Polygon(verts, facecolor="none", edgecolor=color)
+                plt.gca().add_patch(p)
+
+    plt.imshow(masked_image.astype(np.uint8))
+    plt.tight_layout()
+
+    # Return the image instead of showing it
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    plt.close()
+
+    return buf
+
