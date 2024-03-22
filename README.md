@@ -46,7 +46,7 @@ To train or test on MS COCO, you'll also need:
 
 1. Clone this repository
    ```bash
-   git clone https://github.com/z-mahmud22/Mask-RCNN_TF2.14.0.git maskrcnn
+   https://github.com/andryshalom/DECAFIA-MASK_RCNN_TF2_14_EDIT.git git maskrcnn
    ```
 
 2. Create environment with anaconda and install dependencies:
