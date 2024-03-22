@@ -5,14 +5,10 @@ import mrcnn.visualize
 import cv2
 import os
 import tensorflow as tf  # Importar TensorFlow
-from google.colab import drive
+from PIL import Image
+import matplotlib.pyplot as plt
 
-
-# Definir la ruta de destino en Google Drive donde se guardará la imagen resultante
-output_dir = "/content/maskrcnn/images"
-
-# Crear el directorio de salida si no existe
-#os.makedirs(output_dir, exist_ok=True)
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Configurar para usar solo CPU
 
 # load the class label names from disk, one label per line
 # CLASS_NAMES = open("coco_labels.txt").read().strip().split("\n")
@@ -52,13 +48,34 @@ with tf.device('/CPU:0'):  # Force Tensorflow to use CPU
     # Get the results for the first image.
     r = r[0]
 
-    # Visualize the detected objects and save the image to Google Drive
-    result_image = mrcnn.visualize.display_instances(image=image,
-                                                      boxes=r['rois'],
-                                                      masks=r['masks'],
-                                                      class_ids=r['class_ids'],
-                                                      class_names=CLASS_NAMES,
-                                                      scores=r['scores'])
+    # Visualize the detected objects.
+    #result_image=mrcnn.visualize.display_instances(image=image,
+    #                                  boxes=r['rois'],
+    #                                  masks=r['masks'],
+    #                                  class_ids=r['class_ids'],
+    #                                  class_names=CLASS_NAMES,
+    #                                  scores=r['scores'])
+    
+    result_image = mrcnn.visualize.display_instances2(image=image,
+                                  boxes=r['rois'],
+                                  masks=r['masks'],
+                                  class_ids=r['class_ids'],
+                                  class_names=CLASS_NAMES,
+                                  scores=r['scores'])
 
-    # Guardar la imagen resultante en Google Drive
-    cv2.imwrite(os.path.join(output_dir, "result_image.jpg"), cv2.cvtColor(result_image, cv2.COLOR_RGB2BGR))
+    # Directorio donde quieres guardar la imagen
+    output_dir = "/content/maskrcnn/images"
+    os.makedirs(output_dir, exist_ok=True)  # Crear el directorio si no existe
+
+    # Nombre del archivo de la imagen
+    file_name = "result_image.jpg"
+
+    # Ruta completa del archivo
+    file_path = os.path.join(output_dir, file_name)
+
+    # Guardar la imagen en disco
+    with open(file_path, "wb") as f:
+        f.write(result_image.getvalue())
+
+    print("La imagen ha sido guardada en:", file_path)    
+
