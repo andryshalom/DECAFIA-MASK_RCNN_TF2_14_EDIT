@@ -507,7 +507,7 @@ def display_weight_stats(model):
     display_table(table)
 
 
-def display_instances(image, boxes, masks, class_ids, class_names,
+def display_instances2(image, boxes, masks, class_ids, class_names,
                       scores=None, title="",
                       show_mask=True, show_bbox=True,
                       show_caption=True,
