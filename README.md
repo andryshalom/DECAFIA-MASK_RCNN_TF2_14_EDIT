@@ -25,9 +25,153 @@ The following requirements have been updated in the repository:
 - scipy: 1.10.1
 - tensorboard: 2.13.0
 - tensorflow: 2.13.1
+## CustomDataset
+
+### English:
+`CustomDataset` is a powerful and versatile tool that facilitates the loading, management, and manipulation of custom data for computer vision tasks such as semantic segmentation, object detection, and more. It enables developers to easily adapt the data manipulation workflow according to the specific needs of their project.
+
+### Español:
+`CustomDataset` es una herramienta poderosa y versátil que facilita la carga, gestión y manipulación de datos personalizados para tareas de visión por computadora, como segmentación semántica, detección de objetos y más. Permite a los desarrolladores adaptar fácilmente el flujo de trabajo de manipulación de datos según las necesidades específicas de su proyecto.
+
+```python
+# Define a custom dataset class that extends the utils.Dataset class
+class CustomDataset(utils.Dataset):
+
+    # Method to load a custom subset of the dataset
+    def load_custom(self, dataset_dir, subset):
+        """
+        Load a subset of the dataset.
+        
+        dataset_dir: Root directory of the dataset.
+        subset: Subset to load: train or val
+        """
+
+        # Add classes. We have multiple classes to add.
+        self.add_class("object", 1, "HOJAS")
+        self.add_class("object", 2, "ROYA")
+        self.add_class("object", 3, "COCO")
+        self.add_class("object", 4, "MINADOR")
+        #self.add_class("object", 5, "SANAS")
+
+        # Specify the dataset directory based on the subset
+        assert subset in ["train_merged", "val4","test4"]
+        dataset_dir = os.path.join(dataset_dir, subset)
+
+        # Load annotations from the dataset directory
+        annotations1 = json.load(open(os.path.join(dataset_dir, "via_region_data.json")))
+        annotations = list(annotations1.values())  # Convert dictionary values to a list
+
+        # Skip unannotated images
+        annotations = [a for a in annotations if a['regions']]
+
+        # Add images and their corresponding annotations
+        for a in annotations:
+            if isinstance(a['regions'], list):
+                polygons = [r['shape_attributes'] for r in a['regions']]
+                objects = [s['region_attributes']['objetos'] for s in a['regions']]
+            elif isinstance(a['regions'], dict):
+                polygons = [r['shape_attributes'] for r in a['regions'].values()]
+                objects = [s['region_attributes']['objetos'] for s in a['regions'].values()]
+            else:
+                print("a['regions'] is neither a list nor a known dictionary format")
+
+            name_dict = {"HOJAS": 1,"ROYA": 2,"COCO": 3,"MINADOR": 4}
+            num_ids = [name_dict[a] for a in objects]
+
+            # Load image and extract its width and height
+            nombree=os.path.splitext(os.path.basename(a['filename']))[0]+".jpg"
+            image_path = os.path.join(dataset_dir, nombree)
+            image = skimage.io.imread(image_path)
+            height, width = image.shape[:2]
+
+            # Add the image to the dataset
+            self.add_image(
+                "object",
+                image_id=nombree,
+                path=image_path,
+                width=width, height=height,
+                polygons=polygons,
+                num_ids=num_ids
+            )
+
+    # Method to generate instance masks for an image
+    def load_mask(self, image_id):
+        """
+        Generate instance masks for an image.
+        
+        Returns:
+        masks: A bool array of shape [height, width, instance count] with
+               one mask per instance.
+        class_ids: A 1D array of class IDs of the instance masks.
+        """
+
+        # If not a dataset image, delegate to parent class
+        image_info = self.image_info[image_id]
+        if image_info["source"] != "object":
+            return super(self.__class__, self).load_mask(image_id)
+
+        # Convert polygons to a bitmap mask
+        info = self.image_info[image_id]
+        if info["source"] != "object":
+            return super(self.__class__, self).load_mask(image_id)
+        num_ids = info['num_ids']
+        mask = np.zeros([info["height"], info["width"], len(info["polygons"])],
+                        dtype=np.uint8)
+        bounding_boxes = []
+        for i, p in enumerate(info["polygons"]):
+            rr, cc = skimage.draw.polygon(p['all_points_y'], p['all_points_x'])
+            rr = np.clip(rr, 0, info["height"] - 1)
+            cc = np.clip(cc, 0, info["width"] - 1)
+            mask[rr, cc, i] = 1
+
+            # Find bounding box coordinates
+            y_min, y_max = np.min(rr), np.max(rr)
+            x_min, x_max = np.min(cc), np.max(cc)
+            bounding_boxes.append([y_min, x_min, y_max, x_max])
+
+        bounding_boxes = np.asarray(bounding_boxes)
+        num_ids = np.array(num_ids, dtype=np.int32)
+
+        return mask, num_ids, bounding_boxes
+
+    # Method to return the path of the image
+    def image_reference(self, image_id):
+        """Return the path of the image."""
+        info = self.image_info[image_id]
+        if info["source"] == "object":
+            return info["path"]
+        else:
+            super(self.__class__, self).image_reference(image_id)
 
 
+```
+### Here's an example of usage
+```python
+# Crear una instancia del dataset
+dataset_val = CustomDataset()
 
+# Definir una sola ruta
+ruta_unica = "/content/maskrcnn/images"
+# Definir una lista de dos rutas
+rutas_multiples = "/content/maskrcnn/images"
+
+# Cargar datos desde una sola ruta
+#dataset_val.load_custom(ruta_unica, "val4")
+# O cargar datos desde dos rutas diferentes
+dataset_val.load_custom(rutas_multiples, "train_merged")
+
+# Preparar el dataset
+dataset_val.prepare()
+
+dataset_train = CustomDataset()
+dataset_train.load_custom("/content/maskrcnn/images", "train_merged") #
+dataset_train.prepare()
+
+# Validation dataset
+dataset_val = CustomDataset()
+dataset_val.load_custom("/content/maskrcnn/images", "val4") #
+dataset_val.prepare()
+```
 ## Mask R-CNN for Object Detection and Instance Segmentation on Keras and TensorFlow 2.14.0 and Python 3.10.12
 This is an implementation of the [Mask R-CNN](https://arxiv.org/abs/1703.06870) paper which edits the original [Mask_RCNN](https://github.com/matterport/Mask_RCNN) repository (which only supports TensorFlow 1.x), so that it works with Python 3.10.12 and TensorFlow 2.14.0. This new reporsitory allows to train and test (i.e make predictions) the Mask R-CNN  model in TensorFlow 2.14.0. The Mask R-CNN model generates bounding boxes and segmentation masks for each instance of an object in the image. It's based on Feature Pyramid Network (FPN) and a ResNet101 backbone.
 
