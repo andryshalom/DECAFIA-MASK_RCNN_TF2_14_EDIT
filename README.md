@@ -4,6 +4,13 @@ Este repositorio ha sido adaptado especialmente para su uso en un cuaderno de Go
 This repository has been specifically adapted for use in a Google Colab notebook due to compatibility issues with TensorFlow and Keras versions. Its main purpose is to facilitate the training of an artificial intelligence model aimed at detecting diseases in coffee leaves caused by rust, the 'mineiro' leaf miner insect, and the rust ladybug. It includes a pre-cleaned and balanced database, utilizing combinations of databases along with photographs taken in Socorro, Santander (Colombia).
 "MASK RCNN FOR GOOGLE COLAB IN 2024"
 [Coffea arabica](https://youtube.com/shorts/2GMDTUx8XXw?feature=share)
+# Changes in the repository
+## Visualization Function for Detected Instances and Inference on CPU.
+
+A function called `display_instances2` was added to the file "DECAFIA-MASK_RCNN_TF2_14_EDIT/mrcnn/visualize.py" to visualize detected instances in an image. This function takes input such as bounding box coordinates, corresponding masks, class IDs, and other details, and uses them to draw these elements on the image. It provides options to control which elements to display, such as bounding boxes, masks, and captions. Upon completion, the function returns the visualized image in a memory buffer format for further processing.
+
+This function is combined with the file "inference_cpu.py", which uses the CPU to perform inference on an image named "test.jpg". It then saves the results of bounding boxes, masks, and captions to "/content/maskrcnn/images/result_image.jpg" in order to test functionality using the command `$ python3 inference_cpu.py`.
+
 
 ## Mask R-CNN for Object Detection and Instance Segmentation on Keras and TensorFlow 2.14.0 and Python 3.10.12
 This is an implementation of the [Mask R-CNN](https://arxiv.org/abs/1703.06870) paper which edits the original [Mask_RCNN](https://github.com/matterport/Mask_RCNN) repository (which only supports TensorFlow 1.x), so that it works with Python 3.10.12 and TensorFlow 2.14.0. This new reporsitory allows to train and test (i.e make predictions) the Mask R-CNN  model in TensorFlow 2.14.0. The Mask R-CNN model generates bounding boxes and segmentation masks for each instance of an object in the image. It's based on Feature Pyramid Network (FPN) and a ResNet101 backbone.
