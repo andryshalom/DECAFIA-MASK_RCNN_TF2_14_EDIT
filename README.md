@@ -145,6 +145,53 @@ class CustomDataset(utils.Dataset):
 
 
 ```
+## COMBINE SEPARATE FOLDERS
+
+```python
+!pip install rarfile
+
+import rarfile
+import json
+import os
+
+def descomprimir_rar(ruta_rar):
+    # Crear una instancia de la clase RarFile
+    with rarfile.RarFile(ruta_rar) as rf:
+        # Extraer todos los archivos en la misma carpeta que el .rar
+        rf.extractall(os.path.dirname(ruta_rar))
+
+import shutil
+
+# Definir las rutas de las carpetas originales
+rutas_multiples = ["/content/maskrcnn/images/train4", "/content/maskrcnn/images/train4b","/content/maskrcnn/images/train4c"]
+
+# Definir la ruta de la nueva carpeta
+ruta_nueva = "/content/maskrcnn/images/train_merged"
+
+# Crear la carpeta nueva si no existe
+if not os.path.exists(ruta_nueva):
+    os.makedirs(ruta_nueva)
+
+# Mover el contenido de las carpetas originales a la carpeta nueva
+for ruta in rutas_multiples:
+    # Obtener la lista de archivos en la carpeta original
+    archivos = os.listdir(ruta)
+    # Mover cada archivo a la carpeta nueva
+    for archivo in archivos:
+        shutil.move(os.path.join(ruta, archivo), ruta_nueva)
+
+print("¡Contenido de las carpetas movido exitosamente a la nueva carpeta!")
+
+# Ruta del archivo .rar 
+ruta_rar = "/content/maskrcnn/images/val4/via_region_data.rar"
+# Descomprimir el archivo .rar
+descomprimir_rar(ruta_rar)
+# Ruta del archivo .rar 
+ruta_rar = "/content/maskrcnn/images/train_merged/via_region_data.rar"
+# Descomprimir el archivo .rar
+descomprimir_rar(ruta_rar)
+```
+
 ### Here's an example of usage
 ```python
 # Crear una instancia del dataset
