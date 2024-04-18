@@ -10,6 +10,22 @@ This repository has been specifically adapted for use in a Google Colab notebook
 A function called `display_instances2` was added to the file "DECAFIA-MASK_RCNN_TF2_14_EDIT/mrcnn/visualize.py" to visualize detected instances in an image. This function takes input such as bounding box coordinates, corresponding masks, class IDs, and other details, and uses them to draw these elements on the image. It provides options to control which elements to display, such as bounding boxes, masks, and captions. Upon completion, the function returns the visualized image in a memory buffer format for further processing.
 
 This function is combined with the file "inference_cpu.py", which uses the CPU to perform inference on an image named "test.jpg". It then saves the results of bounding boxes, masks, and captions to "/content/maskrcnn/images/result_image.jpg" in order to test functionality using the command `$ python3 inference_cpu.py`.
+## Updated Requirements
+
+The following requirements have been updated in the repository:
+
+- Cython: 3.0.9
+- h5py: 3.9.0
+- imgaug: 0.4.0
+- keras: 2.13.1
+- matplotlib: 3.7.1
+- numpy: 1.24.3
+- opencv-python: 4.9.0
+- scikit-image: 0.19.3
+- scipy: 1.10.1
+- tensorboard: 2.13.0
+- tensorflow: 2.13.1
+
 
 
 ## Mask R-CNN for Object Detection and Instance Segmentation on Keras and TensorFlow 2.14.0 and Python 3.10.12
